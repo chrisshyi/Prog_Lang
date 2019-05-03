@@ -58,4 +58,22 @@ fun dates_in_month(dates: (int*int*int) list, month: int) =
                 rest_in_month
         end
                 
-         
+fun dates_in_months(dates: (int*int*int) list, months: int list) =
+    if null(dates)
+    then []
+    else
+        if null(months)
+        then []
+        else
+            let 
+                val dates_in_rest = dates_in_months(dates, tl(months))
+            in
+                dates_in_month(dates, hd(months)) @ dates_in_rest
+            end 
+
+fun get_nth(strs: string list, n: int) =
+    if n = 1
+    then hd(strs)
+    else
+        get_nth(tl(strs), n - 1)
+    
