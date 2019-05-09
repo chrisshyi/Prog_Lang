@@ -2,9 +2,30 @@
 (* These are basic test cases. Passing these tests does not guarantee that your code will pass the actual homework grader *)
 (* To run the test, add a new line to the top of this file: use "homeworkname.sml"; *)
 (* All the tests should evaluate to true. For example, the REPL should say: val test1 = true : bool *)
+use "hw2.sml";
 
-val test1 = all_except_option ("string", ["string"]) = SOME []
+(* all_except_option tests *)
+val all_except_option_test1 = all_except_option ("string", ["string"]) = SOME []
+val all_except_option_test2 = all_except_option ("string", ["tring"]) = NONE 
+val all_except_option_test3 = all_except_option ("string", ["string", "haha"]) =
+  SOME ["haha"]; 
 
+(* get_substitution1 tests *)
+val sub_list = [["Fred", "Frederick"], ["Elizabeth", "Beth"], ["Freddie",
+"Fred", "F"]];
+val get_sub1_test1 = get_substitutions1(sub_list, "Fred") = ["Frederick", "Freddie", "F"];
+val get_sub1_test2 = get_substitutions1(sub_list, "Beth") = ["Elizabeth"];
+val get_sub1_test3 = get_substitutions1(sub_list, "Elizabeth") = ["Beth"];
+val get_sub1_test4 = get_substitutions1([["foo"],["there"]], "foo") = []
+
+(* get_substitution2 tests *)
+val sub_list = [["Fred", "Frederick"], ["Elizabeth", "Beth"], ["Freddie",
+"Fred", "F"]];
+val get_sub2_test1 = get_substitutions2(sub_list, "Fred") = ["Frederick", "Freddie", "F"];
+val get_sub2_test2 = get_substitutions2(sub_list, "Beth") = ["Elizabeth"];
+val get_sub2_test3 = get_substitutions2(sub_list, "Elizabeth") = ["Beth"];
+val get_sub2_test4 = get_substitutions2([["foo"],["there"]], "foo") = []
+(*
 val test2 = get_substitutions1 ([["foo"],["there"]], "foo") = []
 
 val test3 = get_substitutions2 ([["foo"],["there"]], "foo") = []
@@ -38,4 +59,4 @@ val test13 = ((officiate([(Clubs,Jack),(Spades,Num(8))],
                false) 
               handle IllegalMove => true)
              
-             
+              *)             
