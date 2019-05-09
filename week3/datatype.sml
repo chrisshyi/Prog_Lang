@@ -33,3 +33,17 @@ fun max_in_list(l: int_list) =
                              end
 val some_list = Cons(5, Cons(3, Cons(6, Empty)));
 val max = max_in_list(some_list);
+
+datatype triple = ints of (int*int*int)
+
+fun sum_triple(ints (x1, x2, x3)) =
+    x1 + x2 + x3
+
+fun full_name {first=x, middle=y, last=z} =
+    x ^ " " ^ y ^ " " ^ z
+
+fun append(xs, ys) =
+    case xs of
+         [] => ys
+       | x1::rest => x1 :: append(rest, ys)
+
