@@ -63,3 +63,42 @@ fun get_substitutions2(subs: string list list, s: string) =
     in
         aux(subs, s, [])
     end      
+
+fun similar_names(subs: string list list, full_name: {first: string, middle: string, last: string}) = 
+    case full_name of
+         {first=a, middle=b, last=c} => let val first_name_subs = get_substitutions2(subs, a)
+                                            fun sub_in(sub_choices, full_name) =
+                                                case sub_choices of
+                                                     [] => []
+                                                   | hd::rest => {first=hd, middle=b, last=c} :: sub_in(rest, full_name)  
+                                        in
+                                            full_name :: sub_in(first_name_subs, full_name)
+                                        end 
+fun card_color(my_card: card) =
+    case my_card of
+         (Hearts, _) => Red
+       | (Diamonds, _) => Red
+       | (Spades, _) => Black
+       | (Clubs, _) => Black
+
+fun card_value(my_card: card) =
+    case my_card of
+         (_, Ace) => 11
+       | (_, Num num) => num
+       | (_, _) => 10
+
+fun remove_card(cs: card list, c: card, e: exn) =
+    case cs of
+         [] => raise e
+       | first::rest => if first=c
+                        then rest
+                        else
+                            first::remove_card(rest, c, e) 
+
+fun all_same_color(cs: card list) =
+    case cs of
+         [] => true
+       | first::[] => true
+       | first::second::rest => case first=second of 
+                                     true => all_same_color(second::rest) 
+                                   | false => false 
