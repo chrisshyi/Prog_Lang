@@ -99,8 +99,8 @@ fun all_same_color(cs: card list) =
     case cs of
          [] => true
        | first::[] => true
-       | first::second::rest => case first=second of 
-                                     true => all_same_color(second::rest) 
+       | (suit1, rank1)::(suit2, rank2)::rest => case suit1 = suit2 of 
+                                     true => all_same_color((suit2, rank2)::rest) 
                                    | false => false 
 fun sum_cards(cards: card list) =
     case cards of
@@ -112,3 +112,17 @@ fun sum_cards(cards: card list) =
                                  in
                                     rank_val + sum_cards(rest)
                                  end 
+fun score(cards: card list, goal: int) =
+    let 
+        val sum_of_cards = sum_cards(cards)
+        val same_color = all_same_color(cards)
+        val prelim_score = if sum_of_cards > goal
+                           then 3 * (sum_of_cards - goal)
+                           else goal - sum_of_cards 
+    in
+        if same_color
+        then prelim_score div 2
+        else prelim_score
+    end
+
+        
