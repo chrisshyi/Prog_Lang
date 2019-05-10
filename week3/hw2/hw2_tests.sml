@@ -43,9 +43,10 @@ val test7 = remove_card ([(Hearts, Ace), (Spades, Ace), (Hearts, Ace)] ,
 (Hearts, Ace), IllegalMove) = [(Spades, Ace), (Hearts, Ace)];
 val test8 = all_same_color [(Hearts, Ace), (Hearts, Ace)] = true;
 val test9 = all_same_color([(Hearts, Ace), (Spades, Num 10)]) = false;
+val test10 = sum_cards [(Clubs, Num 2),(Clubs, Num 2)] = 4
+val test101 = sum_cards [] = 0
+val test102 = sum_cards([(Clubs, Num 10), (Spades, Ace), (Hearts, Jack)]) = 31
 (*
-val test9 = sum_cards [(Clubs, Num 2),(Clubs, Num 2)] = 4
-
 val test10 = score ([(Hearts, Num 2),(Clubs, Num 4)],10) = 4
 
 val test11 = officiate ([(Hearts, Num 2),(Clubs, Num 4)],[Draw], 15) = 6

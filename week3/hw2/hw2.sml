@@ -102,3 +102,13 @@ fun all_same_color(cs: card list) =
        | first::second::rest => case first=second of 
                                      true => all_same_color(second::rest) 
                                    | false => false 
+fun sum_cards(cards: card list) =
+    case cards of
+         [] => 0
+       | (suit, rank) :: rest => let val rank_val = case rank of
+                                                        Num x => x
+                                                      | Ace => 11
+                                                      | _ => 10  
+                                 in
+                                    rank_val + sum_cards(rest)
+                                 end 
