@@ -99,8 +99,8 @@ fun all_same_color(cs: card list) =
     case cs of
          [] => true
        | first::[] => true
-       | (suit1, rank1)::(suit2, rank2)::rest => case suit1 = suit2 of 
-                                     true => all_same_color((suit2, rank2)::rest) 
+       | first::second::rest => case card_color(first) = card_color(second) of 
+                                     true => all_same_color(second::rest) 
                                    | false => false 
 fun sum_cards(cards: card list) =
     case cards of
@@ -125,4 +125,74 @@ fun score(cards: card list, goal: int) =
         else prelim_score
     end
 
+(* Takes a deck of cards, a list of moves, a goal, and returns the score at the end of
+   the game
+*)   
+fun officiate(card_deck: card list, moves: move list, goal: int) =
+    let
+        fun proc_move(card_deck: card list, moves: move list, held_cards: card list) = 
+            case moves of
+                    [] => score(held_cards, goal)             
+                  | first_moves::rest_moves => case first_moves of
+                                        Discard c => let val new_held = remove_card(held_cards, c, IllegalMove)
+                                                     in
+                                                        proc_move(card_deck, rest_moves, new_held)
+                                                     end
+                                      | Draw => case card_deck of
+                                                    [] => score(held_cards, goal)   
+                                                  | first_deck::rest_deck => let val new_held = first_deck::held_cards
+                                                                                 val goal_exceeded = sum_cards(new_held) > goal 
+                                                                             in
+                                                                                 if goal_exceeded
+                                                                                 then score(new_held, goal)
+                                                                                 else
+                                                                                     proc_move(rest_deck, rest_moves, new_held)
+                                                                             end 
+    in
+        proc_move(card_deck, moves, [])
+    end
+                                                                         
+                                                       
+fun score_challenge(cards: card list, goal: int) =
+    let
+        fun count_aces(cards: card list) =
+            let fun helper(cards: card list, count: int) =
+                case cards of
+                     [] => count
+                   | (first_suit, first_rank)::rest_cards => if first_rank = Ace
+                                               then helper(rest_cards, count + 1)
+                                               else helper(rest_cards, count)
+            in
+                helper(cards, 0)
+            end
+        (* adjust the sum by changing some aces to count as 1 instead of 11 *)
+        fun adjust_sum(prelim_sum: int, num_aces: int, goal: int) =
+            if prelim_sum <= goal orelse num_aces = 0
+            then prelim_sum
+            else
+                let val diff = prelim_sum - goal
+                in
+                    if diff = 1 orelse diff = 2
+                    then 
+                        prelim_sum
+                    else
+                        adjust_sum(prelim_sum - 10, num_aces - 1, goal)
+                end
+ 
+        val sum_card_val = sum_cards(cards)
+        val num_aces = count_aces(cards)
+        val sum_of_cards = adjust_sum(sum_card_val, num_aces, goal)
+        val same_color = all_same_color(cards)
+        val prelim_score = if sum_of_cards > goal
+                           then 3 * (sum_of_cards - goal)
+                           else goal - sum_of_cards 
+    in
+        if same_color 
+        then prelim_score div 2
+        else prelim_score
+    end
+             
         
+
+            
+    
