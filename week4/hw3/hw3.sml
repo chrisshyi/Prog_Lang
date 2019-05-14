@@ -37,4 +37,42 @@ datatype typ = Anything
 (**** you can put all your code here ****)
 
 fun only_capitals(strings: string list) =
-    List.filter (fn str => (size str > 0 andalso (Char.isUpper(String.sub(str, 0))))) strings 
+    List.filter (fn str => (String.size str > 0 andalso (Char.isUpper(String.sub(str, 0))))) strings 
+
+fun longest_string1(strings: string list) =
+    List.foldr (fn (accum, next) => if String.size accum >= String.size next
+                                    then accum
+                                    else next) "" strings
+
+fun longest_string2(strings: string list) =
+    List.foldr (fn (accum, next) => if String.size accum > String.size next
+                                    then accum
+                                    else next) "" strings
+
+fun longest_string_helper func =
+    let
+        fun fold_func(strings: string list) =
+            let fun helper(strings: string list, accum: string) =
+                case strings of
+                     [] => accum
+                   | first::rest => if func(String.size accum, String.size first)
+                                    then helper(rest, accum) 
+                                    else helper(rest, first)  
+            in
+                helper(strings, "")
+            end
+    in
+        fold_func
+    end
+
+fun longest_string3(strings: string list) =
+    longest_string_helper (fn(x, y) => x >= y) strings
+
+fun longest_string4(strings: string list) =
+    longest_string_helper (fn(x, y) => x > y) strings
+
+fun longest_capitalized(strings: string list) =
+    (longest_string1 o only_capitals) strings
+
+fun rev_string(str: string) =
+    (String.implode o List.rev o String.explode) str 
