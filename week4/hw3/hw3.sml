@@ -13,9 +13,10 @@ datatype valu = Const of int
 	      | Unit
 	      | Tuple of valu list
 	      | Constructor of string * valu
-
+(* (() -> int) -> (string -> int) -> pattern -> int *)
 fun g f1 f2 p =
     let 
+    (* pattern -> int *)
 	val r = g f1 f2 
     in
 	case p of
@@ -40,12 +41,12 @@ fun only_capitals(strings: string list) =
     List.filter (fn str => (String.size str > 0 andalso (Char.isUpper(String.sub(str, 0))))) strings 
 
 fun longest_string1(strings: string list) =
-    List.foldr (fn (accum, next) => if String.size accum >= String.size next
+    List.foldl (fn (next, accum) => if String.size accum >= String.size next
                                     then accum
                                     else next) "" strings
 
 fun longest_string2(strings: string list) =
-    List.foldr (fn (accum, next) => if String.size accum > String.size next
+    List.foldl (fn (next, accum) => if String.size accum > String.size next
                                     then accum
                                     else next) "" strings
 
@@ -95,3 +96,12 @@ fun all_answers func xs =
     in
         helper func xs []
     end
+
+fun count_wildcards(p: pattern) =
+    g (fn _ => 1) (fn _ => 0) p
+
+fun count_wild_and_variable_lengths(p: pattern) =
+    g (fn _ => 1) (fn str => String.size str) p 
+
+fun count_some_var(name: string, p: pattern) =
+    g (fn _ => 0) (fn str => if name = str then 1 else 0) p
