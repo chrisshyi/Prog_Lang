@@ -76,3 +76,22 @@ fun longest_capitalized(strings: string list) =
 
 fun rev_string(str: string) =
     (String.implode o List.rev o String.explode) str 
+
+fun first_answer func xs =
+    case xs of
+         [] => raise NoAnswer
+       | first::rest => case func first of
+                             SOME v => v
+                           | NONE => first_answer func rest  
+
+fun all_answers func xs =
+    let 
+        fun helper func xs accum = 
+            case xs of
+                 [] => SOME []
+               | first::rest => case func first of
+                                     NONE => NONE
+                                   | SOME v => helper func rest (accum @ [v])  
+    in
+        helper func xs []
+    end
