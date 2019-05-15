@@ -54,3 +54,43 @@ val count_var_test2 = count_some_var("hello", ConstructorP ("blah", Variable
 val count_var_test3 = count_some_var("hello", TupleP [Wildcard, Variable
 "hello", ConstructorP ("la", ConstructorP ("la", Variable "hello")), TupleP
 [Variable "hello", Variable "Hello"]]) = 3;
+
+
+val check_pat_test1 = check_pat(TupleP [TupleP [Variable "hello", Variable
+"World"], Variable "World"]) = false;
+val check_pat_test2 = check_pat(TupleP [TupleP [Variable "hello", Variable
+"World"], Variable "blah"]) = true;
+
+val match_test1 = match(Const 5, Wildcard) = SOME [];
+val match_test2 = match(Tuple [Const 5, Unit], Variable "my_var") = SOME
+[("my_var", Tuple [Const 5, Unit])];
+val match_test3 = match (Tuple [Const 5, Const 10, Tuple [Constructor ("my_var",
+Unit), Constructor ("my_var2", Const 15)]], TupleP [Variable "const1", Wildcard,
+TupleP [ConstructorP ("my_var", UnitP), ConstructorP ("my_var2", Variable
+"my_var3")]]) = SOME [("const1", Const 5), ("my_var3", Const 15)]; 
+
+val match_test4 = match (Tuple [Const 5, Const 10, Tuple [Constructor ("my_var",
+Unit), Constructor ("my_var4", Const 15)]], TupleP [Variable "const1", Wildcard,
+TupleP [ConstructorP ("my_var", UnitP), ConstructorP ("my_var2", Variable
+"my_var3")]]) = NONE; 
+
+val match_test5 = match (Tuple[Const 5, Const 10], TupleP [Variable "const1",
+Wildcard]) = SOME [("const1", Const 5)];
+
+
+val first_match_test1 = first_match(Const 5, [Wildcard]) = SOME [];
+val first_match_test2 = first_match(Tuple [Const 5, Unit], [UnitP, Variable
+"my_var"]) = SOME
+[("my_var", Tuple [Const 5, Unit])];
+val first_match_test3 = first_match(Tuple [Const 5, Const 10, Tuple [Constructor ("my_var",
+Unit), Constructor ("my_var2", Const 15)]], [UnitP, ConstP 5, TupleP [Variable "const1", Wildcard,
+TupleP [ConstructorP ("my_var", UnitP), ConstructorP ("my_var2", Variable
+"my_var3")]]]) = SOME [("const1", Const 5), ("my_var3", Const 15)]; 
+
+val first_match_test4 = first_match(Tuple [Const 5, Const 10, Tuple [Constructor ("my_var",
+Unit), Constructor ("my_var4", Const 15)]], [UnitP, TupleP [Variable "const1", Wildcard,
+TupleP [ConstructorP ("my_var", UnitP), ConstructorP ("my_var2", Variable
+"my_var3")]]]) = NONE; 
+
+val first_match_test5 = first_match(Tuple[Const 5, Const 10], [TupleP [Variable "const1",
+Wildcard], Variable "throwaway"]) = SOME [("const1", Const 5)];

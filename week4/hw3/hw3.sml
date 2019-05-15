@@ -89,10 +89,10 @@ fun all_answers func xs =
     let 
         fun helper func xs accum = 
             case xs of
-                 [] => SOME []
+                 [] => SOME accum 
                | first::rest => case func first of
                                      NONE => NONE
-                                   | SOME v => helper func rest (accum @ [v])  
+                                   | SOME v => helper func rest (accum @ v)  
     in
         helper func xs []
     end
@@ -105,3 +105,77 @@ fun count_wild_and_variable_lengths(p: pattern) =
 
 fun count_some_var(name: string, p: pattern) =
     g (fn _ => 0) (fn str => if name = str then 1 else 0) p
+
+fun check_pat(p: pattern) =
+    let
+        fun get_var_names(p) =
+            let fun helper(p, accum) =
+                case p of
+                     Wildcard => accum
+                   | Variable s => s::accum
+                   | UnitP => accum
+                   | ConstP _ => accum
+                   | TupleP ps => List.foldl (fn (next, accum) => helper(next, accum)) [] ps
+                   | ConstructorP (_, p) => helper(p, accum)
+            in
+                helper(p, [])
+            end
+        fun check_for_repeat(strs: string list) =
+            case strs of
+                 [] => false
+               | first::[] => false
+               | first::rest => List.exists (fn s => first = s) rest orelse
+               check_for_repeat(rest)
+
+        val var_names = get_var_names(p)
+    in
+        not (check_for_repeat(var_names))
+    end
+            
+
+(* for testing            
+fun get_var_names(p) =
+      let fun helper(p, accum) =
+          case p of
+               Wildcard => accum
+             | Variable s => s::accum
+             | UnitP => accum
+             | ConstP _ => accum
+             | TupleP ps => List.foldl (fn (next, accum) => helper(next, accum)) [] ps
+             | ConstructorP (_, p) => helper(p, accum)
+      in
+          helper(p, [])
+      end
+*)
+
+fun match(v: valu, p: pattern) =
+    case (v, p) of
+         (_, Wildcard) => SOME []
+       | (Unit, UnitP) => SOME []
+       | (Const c1, ConstP c2) => if c1 = c2 then SOME [] else NONE
+       | (_, Variable s) => SOME [(s, v)]
+       | (Tuple vs, TupleP ps) => if (List.length vs) = (List.length ps)
+                                  then let 
+                                            val match_pairs = ListPair.zip(vs, ps)
+                                       in
+                                            all_answers match match_pairs
+                                       end  
+                                  else
+                                       NONE
+       | (Constructor (s2, v), ConstructorP (s1, p)) => if s1 = s2 
+                                                        then match (v, p)
+                                                        else NONE
+       | (_, _) => NONE  
+
+fun first_match(v: valu, ps: pattern list) =
+    let
+        fun make_pairs(v, ps) =
+            case ps of
+                 [] => []
+               | first::rest => (v, first) :: make_pairs(v, rest)  
+        val pairs = make_pairs(v, ps);
+    in
+        SOME (first_answer match pairs) handle NoAnswer => NONE
+    end
+
+     
