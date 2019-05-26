@@ -20,5 +20,9 @@
   (if (= n 0) null
       (let ([eval-thunk (s)]) (cons (car eval-thunk) (stream-for-n-steps (cdr eval-thunk) (- n 1))))))
 
+(define funny-number-stream
+  (letrec ([helper (lambda (x) (if (= (remainder x 5) 0) (- x) x))]
+        [helper2 (lambda (x) (cons (helper x) (lambda() (helper2 (+ x 1)))))]) (lambda () (helper2 1))))
+
 ;; put your code below
 
