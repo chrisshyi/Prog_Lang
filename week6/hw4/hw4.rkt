@@ -26,3 +26,9 @@
 
 ;; put your code below
 
+
+(define dan-then-dog (letrec ([dog-thunk (lambda () (cons "dog.jpg" dan-thunk))]
+                              [dan-thunk (lambda () (cons "dan.jpg" dog-thunk))]) dan-thunk))
+
+(define (stream-add-zero s) (lambda () (cons (cons 0 (car (s))) (stream-add-zero (cdr (s))))))
+
