@@ -35,3 +35,10 @@
 (define (cycle-lists xs ys) (letrec ([helper (lambda (n) (cons (cons (list-nth-mod xs n) (list-nth-mod ys n)) (lambda () (helper (+ n 1)))))])
   (lambda () (helper 0))))
 
+(define (vector-assoc v vec) (letrec ([helper (lambda (v vec index)
+                                             (cond [(= index (vector-length vec)) #f]
+                                                                       [(not (pair? (vector-ref vec index))) (helper v vec (+ index 1))]
+                                                                       [(equal? (car (vector-ref vec index)) v) (vector-ref vec index)]
+                                                                       [#t (helper v vec (+ index 1))]))])
+                               (helper v vec 0)))
+
