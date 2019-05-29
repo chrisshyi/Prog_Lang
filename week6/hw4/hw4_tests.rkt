@@ -48,7 +48,7 @@
    (check-equal? (stream-for-n-steps (stream-add-zero nats) 5) (list (cons 0 1) (cons 0 2) (cons 0 3) (cons 0 4) (cons 0 5)))
    
    ; cycle-lists test
-   ;(check-equal? (stream-for-n-steps (cycle-lists (list 1 2 3) (list "a" "b")) 3) (list (cons 1 "a") (cons 2 "b") (cons 3 "a")) 
+   (check-equal? (stream-for-n-steps (cycle-lists (list 1 2 3) (list "a" "b")) 3) (list (cons 1 "a") (cons 2 "b") (cons 3 "a")) 
                  "cycle-lists test")
    
    ; vector-assoc test
@@ -60,7 +60,7 @@
    ; while-less test
    ;(check-equal? (while-less 7 do (begin (set! a (+ a 1)) a)) #t "while-less test")
    
-   )
+   ))
 
 (require rackunit/text-ui)
 ;; runs the test
