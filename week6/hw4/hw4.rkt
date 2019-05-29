@@ -42,3 +42,16 @@
                                                                        [#t (helper v vec (+ index 1))]))])
                                (helper v vec 0)))
 
+(define (cached-assoc xs n) (letrec ([cache (make-vector n #f)]
+                                     [next-slot 0]
+                                     [assoc-with-cache (lambda (v) (let ([cache-lookup (vector-assoc v cache)])
+                                                                        (if (not cache-lookup) ; not found in cache
+                                                                            (let ([list-lookup (assoc v xs)])
+                                                                              (if (not list-lookup) ; not in list either
+                                                                                  #f
+                                                                                  (begin (vector-set! cache next-slot list-lookup)
+                                                                                         (set! next-slot (+ next-slot 1))
+                                                                                         list-lookup)))
+                                                                            cache-lookup)))])
+                              assoc-with-cache))
+
