@@ -50,7 +50,7 @@
                                                                               (if (not list-lookup) ; not in list either
                                                                                   #f
                                                                                   (begin (vector-set! cache next-slot list-lookup)
-                                                                                         (set! next-slot (+ next-slot 1))
+                                                                                         (set! next-slot (modulo (+ next-slot 1) n))
                                                                                          list-lookup)))
                                                                             cache-lookup)))])
                               assoc-with-cache))
