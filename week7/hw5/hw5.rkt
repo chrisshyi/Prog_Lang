@@ -115,9 +115,9 @@
         
 ;; Problem 3
 
-(define (ifaunit e1 e2 e3) "CHANGE")
+(define (ifaunit e1 e2 e3) (ifgreater e1 (int 0) e2 e3))
 
-(define (mlet* lstlst e2) "CHANGE")
+(define (mlet* lstlst e2) (if (null? lstlst) 
 
 (define (ifeq e1 e2 e3 e4) "CHANGE")
 
@@ -146,6 +146,6 @@
 (define (eval-exp-c e)
   (eval-under-env-c (compute-free-vars e) null))
 
-(define sum-n
-     (eval-exp (fun "sum-n" "n" (ifgreater (var "n") (int 0) (add (var "n") (call (var "sum-n") (add (var "n") (int -1)))) (int 0)))))
-(eval-exp (call sum-n (int 5)))
+;(define sum-n
+    ; (eval-exp (fun "sum-n" "n" (ifgreater (var "n") (int 0) (add (var "n") (call (var "sum-n") (add (var "n") (int -1)))) (int 0)))))
+;(eval-exp (call sum-n (int 5))
