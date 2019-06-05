@@ -98,15 +98,7 @@
            (if (aunit? v)
                (int 1)
                (int 0)))]
-                      
           
-              
-           
-               
-               
-         
-
-        
         [#t (error (format "bad MUPL expression: ~v" e))])))
 
 ;; Do NOT change
@@ -123,7 +115,11 @@
 
 ;; Problem 4
 
-(define mupl-map "CHANGE")
+(define mupl-map (fun "map-func" "func" (fun "map" "elems" (ifaunit (var "elems")
+                                                                    (aunit)
+                                                                    (apair (call (var "func")
+                                                                                 (fst (var "elems")))
+                                                                                 (call (var "map") (snd (var "elems"))))))))
 
 (define mupl-mapAddN 
   (mlet "map" mupl-map
