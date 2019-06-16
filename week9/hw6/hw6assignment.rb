@@ -21,10 +21,14 @@ class MyPiece < Piece
                 rotations([[0, 0], [1, 0], [2, 0], [0, 1], [1, 1]]), # new block #1
                 rotations([[0, 0], [1, 0], [0, 1]]) # new block # 3
                 ]
+    Special_Piece = [[[0, 0]]]
     # your enhancements here
 
-    def self.next_piece(board)
-        MyPiece.new(All_My_Pieces.sample, board)        
+    def self.next_piece(board, is_cheating)
+        if is_cheating
+            MyPiece.new(Special_Piece[0], board)
+        else
+            MyPiece.new(All_My_Pieces.sample, board)        
     end
 
 end
@@ -39,8 +43,8 @@ class MyBoard < Board
         @delay = 500
     end
 
-    def next_piece
-        @current_block = MyPiece.next_piece(self)
+    def next_piece(is_cheating)
+        @current_block = MyPiece.next_piece(self, is_cheating)
         @current_pos = nil
     end
 
@@ -55,6 +59,18 @@ class MyBoard < Board
         remove_filled
         @delay = [@delay - 2, 80].max
     end
+
+    def run(is_cheating)
+        ran = @current_block.drop_by_one
+        if !ran
+        store_current
+        if !game_over?
+            next_piece(is_cheating)
+        end
+        end
+        @game.update_score
+        draw
+    end
 end
 
 class MyTetris < Tetris
@@ -65,6 +81,29 @@ class MyTetris < Tetris
         @canvas.place(@board.block_size * @board.num_rows + 3,
                     @board.block_size * @board.num_columns + 6, 24, 80)
         @board.draw
+    end
+
+    def initialize
+        super()
+        @is_cheating = false
+
+    def key_bindings  
+        super()
+        @root.bind('c', proc {self.cheat})
+    end
+
+    def run_game
+        @is_cheating = false
+        if !@board.game_over? and @running
+            @timer.stop
+            @timer.start(@board.delay, (proc{@board.run(@is_cheating); run_game}))
+        end
+    end
+
+    def cheat
+        if @board.score >= 100
+            @board.score -= 100
+            @is_cheating = true
     end
 end
 
