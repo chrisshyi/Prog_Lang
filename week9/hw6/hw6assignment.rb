@@ -86,6 +86,15 @@ class MyBoard < Board
     def add_cheat_block
         @next_block_stack.push(MyPiece.make_special_piece(self))
     end
+
+    def rotate_180
+        if !game_over? and @game.is_running?
+            @current_block.move(0, 0, 1)
+            @current_block.move(0, 0, 1)
+        end
+        draw
+    end
+        
 end
 
 class MyTetris < Tetris
@@ -101,6 +110,7 @@ class MyTetris < Tetris
     def key_bindings  
         super()
         @root.bind('c', proc {self.cheat})
+        @root.bind('u', proc {@board.rotate_180})
     end
 
     def cheat
