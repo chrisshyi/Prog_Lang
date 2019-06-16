@@ -24,11 +24,12 @@ class MyPiece < Piece
     Special_Piece = [[[0, 0]]]
     # your enhancements here
 
-    def self.next_piece(board, is_cheating)
-        if is_cheating
-            MyPiece.new(Special_Piece[0], board)
-        else
-            MyPiece.new(All_My_Pieces.sample, board)        
+    def self.next_piece(board)
+        MyPiece.new(All_My_Pieces.sample, board)        
+    end
+
+    def self.make_special_piece(board)
+        MyPiece.new(Special_Piece[0], board)
     end
 
 end
@@ -41,11 +42,17 @@ class MyBoard < Board
         @score = 0
         @game = game
         @delay = 500
+        @next_block_stack = []
     end
 
-    def next_piece(is_cheating)
-        @current_block = MyPiece.next_piece(self, is_cheating)
-        @current_pos = nil
+    def next_piece
+        if @next_block_stack.size == 0
+            @current_block = MyPiece.next_piece(self)
+            @current_pos = nil
+        else
+            @current_block = @next_block_stack.pop
+            @current_pos = nil
+        end
     end
 
     def store_current
@@ -60,16 +67,24 @@ class MyBoard < Board
         @delay = [@delay - 2, 80].max
     end
 
-    def run(is_cheating)
+    def run
         ran = @current_block.drop_by_one
         if !ran
         store_current
         if !game_over?
-            next_piece(is_cheating)
+            next_piece
         end
         end
         @game.update_score
         draw
+    end
+
+    def set_score(new_score)
+        @score = new_score
+    end
+
+    def add_cheat_block
+        @next_block_stack.push(MyPiece.make_special_piece(self))
     end
 end
 
@@ -83,27 +98,17 @@ class MyTetris < Tetris
         @board.draw
     end
 
-    def initialize
-        super()
-        @is_cheating = false
-
     def key_bindings  
         super()
         @root.bind('c', proc {self.cheat})
     end
 
-    def run_game
-        @is_cheating = false
-        if !@board.game_over? and @running
-            @timer.stop
-            @timer.start(@board.delay, (proc{@board.run(@is_cheating); run_game}))
-        end
-    end
-
     def cheat
-        if @board.score >= 100
-            @board.score -= 100
-            @is_cheating = true
+        curr_score = @board.score
+        if curr_score >= 100
+            @board.set_score(curr_score - 100)
+            @board.add_cheat_block
+        end
     end
 end
 
