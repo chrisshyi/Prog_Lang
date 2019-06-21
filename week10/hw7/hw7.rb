@@ -118,6 +118,19 @@ class Point < GeometryValue
     @x = x
     @y = y
   end
+
+  def eval_prog env
+    self
+  end
+
+  def preprocess_prog
+    self
+  end
+  def shift(dx,dy)
+    # mutate or return new object??
+    @x = x + dx
+    @y = y + dy
+  end
 end
 
 class Line < GeometryValue
@@ -128,6 +141,18 @@ class Line < GeometryValue
     @m = m
     @b = b
   end
+  def eval_prog env
+    self
+  end
+
+  def preprocess_prog
+    self
+  end
+
+  def shift(dx, dy)
+    @b = b + dy - m * dx
+  end
+
 end
 
 class VerticalLine < GeometryValue
@@ -136,6 +161,17 @@ class VerticalLine < GeometryValue
   attr_reader :x
   def initialize x
     @x = x
+  end
+  def eval_prog env
+    self
+  end
+
+  def preprocess_prog
+    self
+  end
+
+  def shift(dx, dy)
+    @x = x + dx
   end
 end
 
@@ -152,6 +188,7 @@ class LineSegment < GeometryValue
     @x2 = x2
     @y2 = y2
   end
+
 end
 
 # Note: there is no need for getter methods for the non-value classes
