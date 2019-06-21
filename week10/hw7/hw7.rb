@@ -127,9 +127,7 @@ class Point < GeometryValue
     self
   end
   def shift(dx,dy)
-    # mutate or return new object??
-    @x = x + dx
-    @y = y + dy
+    Point.new(@x + dx, @y + dy)
   end
 end
 
@@ -150,7 +148,7 @@ class Line < GeometryValue
   end
 
   def shift(dx, dy)
-    @b = b + dy - m * dx
+    Line.new(m, b + dy - m * dx)
   end
 
 end
@@ -171,7 +169,7 @@ class VerticalLine < GeometryValue
   end
 
   def shift(dx, dy)
-    @x = x + dx
+    VerticalLine.new(@x + dx)
   end
 end
 
@@ -189,6 +187,23 @@ class LineSegment < GeometryValue
     @y2 = y2
   end
 
+  def eval_prog env
+    self
+  end
+
+  def preprocess_prog
+    if real_close_point(@x1, @y1, @x2, @y2)
+      return Point.new(@x1, @y1)
+    elsif real_close(@x1, @x2)
+      if @y1 > @y2 then LineSegment.new(@x2, @y2, @x1, @y1)
+      else
+        self
+      end
+    elsif @x1 > @x2 then LineSegment.new(@x2, @y2, @x1, @y1)
+    else
+      self
+    end  
+  end
 end
 
 # Note: there is no need for getter methods for the non-value classes
@@ -199,6 +214,10 @@ class Intersect < GeometryExpression
   def initialize(e1,e2)
     @e1 = e1
     @e2 = e2
+  end
+
+  def shift(dx, dy)
+    self
   end
 end
 
@@ -211,6 +230,20 @@ class Let < GeometryExpression
     @e1 = e1
     @e2 = e2
   end
+
+  def preprocess_prog
+    self
+  end
+
+  def shift(dx, dy)
+    self
+  end
+
+  def eval_prog env
+    env_copy = Array.new(env)
+    env_copy.push([@s, @e1.preprocess_prog.eval_prog])
+    @e2.eval_prog(env_copy)
+  end
 end
 
 class Var < GeometryExpression
@@ -219,6 +252,16 @@ class Var < GeometryExpression
   def initialize s
     @s = s
   end
+
+  def preprocess_prog
+    self
+  end
+
+  def shift(dx, dy)
+    self
+  end
+
+
   def eval_prog env # remember: do not change this method
     pr = env.assoc @s
     raise "undefined variable" if pr.nil?
@@ -233,5 +276,18 @@ class Shift < GeometryExpression
     @dx = dx
     @dy = dy
     @e = e
+  end
+
+  def preprocess_prog
+    self
+  end
+
+  def shift(dx, dy)
+    self
+  end
+
+
+  def eval_prog env
+    e.shift(@dx, @dy)
   end
 end
