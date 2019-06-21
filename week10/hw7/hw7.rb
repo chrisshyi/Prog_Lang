@@ -216,6 +216,10 @@ class Intersect < GeometryExpression
     @e2 = e2
   end
 
+  def preprocess_prog
+    Intersect.new(@e1.preprocess_prog, @e2.preprocess_prog)
+  end
+
   def shift(dx, dy)
     self
   end
@@ -232,7 +236,7 @@ class Let < GeometryExpression
   end
 
   def preprocess_prog
-    self
+    Let.new(@s, @e1.preprocess_prog, @e2.preprocess_prog)
   end
 
   def shift(dx, dy)
@@ -279,7 +283,7 @@ class Shift < GeometryExpression
   end
 
   def preprocess_prog
-    self
+    Shift.new(@dx, @dy, @e.preprocess_prog)
   end
 
   def shift(dx, dy)
