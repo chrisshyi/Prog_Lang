@@ -196,7 +196,16 @@ fun eval_prog (e,env) =
       | Let(s,e1,e2) => eval_prog (e2, ((s, eval_prog(e1,env)) :: env))
       | Intersect(e1,e2) => intersect(eval_prog(e1,env), eval_prog(e2, env))
 (* CHANGE: Add a case for Shift expressions *)
-      (* | Shift (dx, dy) => *)
+      | Shift (dx, dy, e) => let val eval_e = eval_prog(e, env)
+                             in
+                                case eval_e of
+                                     NoPoints => eval_e
+                                   | Point(x, y) => Point(x + dx, y + dy)
+                                   | Line(m, b) => Line(m, b + dy - m * dx)
+                                   | VerticalLine(x) => VerticalLine(x + dx)
+                                   | LineSegment(x1, y1, x2, y2) => LineSegment(x1 + dx, y1 + dy, x2 + dx, y2 + dy)
+                                   | _ => eval_e
+                             end
 
 (* CHANGE: Add function preprocess_prog of type geom_exp -> geom_exp *)
 fun preprocess_prog (e) =
@@ -210,7 +219,7 @@ fun preprocess_prog (e) =
             else
                 if x1 > x2 then LineSegment(x2, y2, x1, y1)
                 else LineSegment(x1, y1, x2, y2)
-      | _ => e
+        | _ => e
                     
 
 
