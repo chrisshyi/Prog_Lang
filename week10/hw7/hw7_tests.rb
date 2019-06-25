@@ -2,7 +2,7 @@
 # hw7testsprovided.rb
 
 require "./hw7.rb"
-
+require 'pry' 
 # Will not work completely until you implement all the classes and their methods
 
 # Will print only if code has errors; prints nothing if all tests pass
@@ -112,7 +112,6 @@ if not (d.x1 == -THREE and d.y1 == -FOUR and d.x2 == ONE and d.y2 == TWO)
 	puts "LineSegment preprocess_prog should make x1 and y1"
 	puts "on the left of x2 and y2"
 end
-
 d3 = d.shift(THREE,FIVE)
 if not (d3.x1 == ZERO and d3.y1 == ONE and d3.x2 == FOUR and d3.y2 == SEVEN)
 	puts "LineSegment shift not working properly"
